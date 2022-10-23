@@ -1,0 +1,47 @@
+import org.gradle.api.JavaVersion
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.openjfx:javafx-plugin:0.0.8"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id 'application'
+}
+
+// where to get the dependencies
+repositories {
+    mavenCentral()
+}
+
+// dependencies
+dependencies {
+    implementation fileTree('lib')			// all jars in the lib directory
+    implementation 'org.jblas:jblas:1.2.5'    // JBLAS fÃ¼r Matrix Operationen
+    testImplementation 'junit:junit:4.13.2'        // jUnit for running unit tests
+}
+
+// Install JavaFX for any Java 11 version or higher
+if(JavaVersion.current() >= JavaVersion.VERSION_11) {
+    apply plugin: "org.openjfx.javafxplugin"
+
+    javafx {
+        modules = [ 'javafx.controls', 'javafx.fxml' ]
+    }
+
+    run {
+        // Temporal fix for Eclipse with JDK 1.8 and Windows
+        if (osdetector.os == 'windows') {
+            systemProperty "java.library.path", System.getProperty("java.io.tmpdir")
+        }
+    }
+}
